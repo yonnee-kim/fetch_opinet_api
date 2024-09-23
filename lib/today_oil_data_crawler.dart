@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' as html_parser;
-import 'package:path/path.dart';
 import 'package:webdriver/async_io.dart';
 
 int crawlCount = 0;
@@ -287,9 +286,6 @@ Future<void> getOpinetCrawlingData() async {
   var sidoSigunData = json.decode(await File('json/sido_sigun_code.json').readAsString());
   List sidoNameList = (sidoSigunData['SIDO'] as List).map((e) => e["AREA_NM"]).toList(); //모든 시도코드 반환
   Map<String, dynamic> sidoSigunNameMap = {};
-  List existingFile = jsonDecode(await file.readAsString());
-  List<Map<String, String>> oilData = [];
-  List<Map<String, String>> smallOilData = [];
   int delaySeconds = 2;
 
   // 모든 시군네임 반환

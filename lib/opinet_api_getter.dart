@@ -85,7 +85,6 @@ Future<void> getAvgWeekPriceSido() async {
         var response = await http.get(Uri.parse(url));
         if (response.statusCode == 200) {
           var data = json.decode(response.body);
-          Map sigunEntries = {'SIDOCD': sidoCode, 'DATA': data['RESULT']['OIL']};
           areaAvgWeekPrice.addAll(data['RESULT']['OIL']);
           print('${data['RESULT']['OIL'][0]['AREA_NM']} 7일간 평균가격 조회 완료');
           success = true; // 성공적으로 데이터를 가져왔으므로 루프 종료
@@ -128,7 +127,6 @@ Future<void> getAvgWeekPriceSigun() async {
         var response = await http.get(Uri.parse(url));
         if (response.statusCode == 200) {
           var data = json.decode(response.body);
-          Map sigunEntries = {'SIGUNCD': sigunCode, 'DATA': data['RESULT']['OIL']};
           areaAvgWeekPrice.addAll(data['RESULT']['OIL']);
           print('${data['RESULT']['OIL'][0]['AREA_NM']} 7일간 평균가격 조회 완료');
           success = true; // 성공적으로 데이터를 가져왔으므로 루프 종료
