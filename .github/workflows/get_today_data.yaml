@@ -1,0 +1,42 @@
+name: Scheduled Tasks getTodayData
+
+on:
+  schedule:
+    - cron: '10 15 * * *' # 매일 한국 시간(KST, UTC+9) 0시에  실행
+  workflow_dispatch: # 수동 실행을 위한 트리거 추가
+
+jobs:
+  run-functions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Dart
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: 'stable'
+
+      - name: Install dependencies
+        run: dart pub get
+
+      - name: Run getTodayData
+        env:
+            OPINET_API_KEY: ${{ secrets.OPINET_API_KEY }}
+        run: |
+          dart run bin/main.dart getTodayData
+
+      - name: Configure Git
+        run: |
+          git config --local user.email "yhsofa89@gmail.com"
+          git config --local user.name "GitHub Actions"
+
+      - name: Check for changes and commit
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # GITHUB_TOKEN 추가
+        run: |
+          git add json/ # 필요한 파일 추가
+          if [[ $(git diff --cached --stat) ]]; then
+            echo "json/ 디렉토리 내 파일 내용 변경사항 있음"
+          fi
+          git commit -m "Update data files from GitHub Actions" --allow-empty && git push || echo "No changes to commit"
