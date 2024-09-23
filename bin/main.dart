@@ -9,7 +9,7 @@ Future<void> main(List<String> args) async {
         await getSigunCode();
         break;
       case 'getRecentData':
-        //setPriceFromWeekPrice();
+        // setPriceFromWeekPrice();
         await getAvgSidoPrice();
         await getAvgSigunPrice();
         break;

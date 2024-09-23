@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
 
 import 'package:http/http.dart' as http;
 
@@ -428,16 +427,30 @@ void setPriceFromWeekPrice() async {
   print(sidoCodeList);
   var weekPriceSigun = json.decode(await File('json/avg_week_price_sigun.json').readAsString());
   var weekPriceSido = json.decode(await File('json/avg_week_price_sido.json').readAsString());
-  var avgSigunPrice = json.decode(await File('json/avg_sigun_price.json').readAsString());
-  var avgSidoPrice = json.decode(await File('json/avg_sido_price.json').readAsString());
+  var avgSigunPrice = json.decode(await File('json/old_avg_sigun_price.json').readAsString());
+  var avgSidoPrice = json.decode(await File('json/old_avg_sido_price.json').readAsString());
   var newSigunPrice = [];
   var newSidoPrice = [];
   List dateList = [];
+  // set dateList
   for (var e in weekPriceSido) {
     dateList.add(e['DATE']);
   }
+  // weekPrice key 이름 변경
+  for (var e in weekPriceSido) {
+    e['SIDOCD'] = e['AREA_CD'];
+    e.remove('AREA_CD');
+    e['SIDONM'] = e['AREA_NM'];
+    e.remove('AREA_NM');
+  }
+  for (var e in weekPriceSigun) {
+    e['SIGUNCD'] = e['AREA_CD'];
+    e.remove('AREA_CD');
+    e['SIGUNNM'] = e['AREA_NM'];
+    e.remove('AREA_NM');
+  }
   dateList = dateList.toSet().toList();
-
+  print('dateList = $dateList');
   for (var date in dateList) {
     List dataList = [];
     for (var e in weekPriceSido) {
@@ -449,6 +462,10 @@ void setPriceFromWeekPrice() async {
   }
   newSidoPrice.addAll(avgSidoPrice);
   newSidoPrice.sort((a, b) => a['DATE'].compareTo(b['DATE']));
+  List asdff = newSidoPrice.map((e) => e['DATE']).toList();
+  for (var element in asdff) {
+    print(element);
+  }
   File('json/new_avg_week_price_sido.json').writeAsString(json.encode(newSidoPrice));
 
   for (var date in dateList) {
@@ -456,17 +473,22 @@ void setPriceFromWeekPrice() async {
     for (var sido in sidoCodeList) {
       List sidoDataList = [];
       for (var e in weekPriceSigun) {
-        if (e['DATE'] == date) {
-          dataList.add(e);
+        if (e['DATE'] == date && e['SIGUNCD'].substring(0, 2) == sido) {
+          sidoDataList.add(e);
         }
       }
+      dataList.add({'SIDOCD': sido, 'DATA': sidoDataList});
     }
     newSigunPrice.add({'DATE': dateTimeParser(date), 'DATA': dataList});
   }
   newSigunPrice.addAll(avgSigunPrice);
   newSigunPrice.sort((a, b) => a['DATE'].compareTo(b['DATE']));
-  print('newSigunPrice = $newSigunPrice');
+  //print('newSigunPrice = $newSigunPrice');
   print('\ndate 리스트 : ${newSigunPrice.map((e) => e['DATE']).toList()}');
+  List asdf = newSigunPrice.map((e) => e['DATE']).toList();
+  for (var element in asdf) {
+    print(element);
+  }
   File('json/new_avg_week_price_sigun.json').writeAsString(json.encode(newSigunPrice));
 }
 
