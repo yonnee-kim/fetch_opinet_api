@@ -149,6 +149,7 @@ Future<void> getAvgSigunPrice() async {
   List sidoCodeList = (sidoSigunCode['SIDO'] as List).map((e) => e["AREA_CD"]).toList(); //모든 시도코드 반환
   List sigunEntriesList = [];
   File file = File('json/avg_sigun_price.json');
+  File smallFile = File('json/avg_sigun_price_small.json');
   List existingData = jsonDecode(await file.readAsString());
   bool isSame = true;
   int tryCount = 10;
@@ -253,6 +254,10 @@ Future<void> getAvgSigunPrice() async {
   Map sidoEntries = {'DATE': nowKST.toString(), 'DATA': sigunEntriesList};
   List avgSigunPrice = existingData..add(sidoEntries);
   await file.writeAsString(json.encode(avgSigunPrice));
+  if (avgSigunPrice.length > 150) {
+    List smallAvgSigunPrice = avgSigunPrice.sublist(avgSigunPrice.length - 150, avgSigunPrice.length);
+    await smallFile.writeAsString(json.encode(smallAvgSigunPrice));
+  }
   print('$nowKST / 시군구별 현재 평균가격 조회 및 저장 완료');
   print('저장 후 avgSigunPrice 길이는 ${avgSigunPrice.length}');
 }
@@ -260,6 +265,7 @@ Future<void> getAvgSigunPrice() async {
 Future<void> getAvgSidoPrice() async {
   List entriesList = [];
   File file = File('json/avg_sido_price.json');
+  File smallFile = File('json/avg_sido_price_small.json');
   List existingData = jsonDecode(await file.readAsString());
   bool isSame = true;
   int tryCount = 10;
@@ -328,6 +334,10 @@ Future<void> getAvgSidoPrice() async {
   Map sidoEntries = {'DATE': nowKST.toString(), 'DATA': entriesList};
   List avgSidoPrice = existingData..add(sidoEntries);
   await file.writeAsString(json.encode(avgSidoPrice));
+  if (avgSidoPrice.length > 150) {
+    List smallAvgSidoPrice = avgSidoPrice.sublist(avgSidoPrice.length - 150, avgSidoPrice.length);
+    await smallFile.writeAsString(json.encode(smallAvgSidoPrice));
+  }
   print('$nowKST / 시도별 현재 평균가격 조회 및 저장 완료');
   print('저장 후 avgSidoPrice 길이는 ${avgSidoPrice.length}');
 }
